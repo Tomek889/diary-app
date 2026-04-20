@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 export default function Layout() {
@@ -7,9 +7,13 @@ export default function Layout() {
     return window.localStorage.getItem("userEmail") || "";
   });
 
+  const navigate = useNavigate();
+
   const handleLogout = () => {
     window.localStorage.removeItem("userEmail");
     setEmail("");
+    navigate("/");
+    window.location.reload();
   };
 
   return (

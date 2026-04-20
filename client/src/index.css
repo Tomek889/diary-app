@@ -73,3 +73,11 @@ nav {
     display: flex;
     justify-content: space-around;
 }
+
+.dropdown {
+    padding: 40px;
+    margin-top: 140px;
+    border: 0px;
+    background-color: #e4e6f6;
+    border-radius: 10px;
+}

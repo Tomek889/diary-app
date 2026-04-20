@@ -1,32 +1,24 @@
 import { useState } from "react";
-import { Day, DayPicker } from "react-day-picker";
+import { DayPicker } from "react-day-picker";
+import { useNavigate } from "react-router-dom";
+import "react-day-picker/dist/style.css";
+
+function convertDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
 
 export default function Calendar() {
   const [date, setDate] = useState();
+  const navigate = useNavigate();
 
-  return (
-    <>
-      <button
-        popoverTarget="rdp-popover"
-        className="input input-border"
-        style={{ anchorName: "--rdp" }}
-      >
-        {date ? date.toLocaleDateString() : "Pick a date"}
-      </button>
+  const handleSelect = (selectedDate) => {
+    if (!selectedDate) return;
+    setDate(selectedDate);
+    navigate(`/journal/${convertDate(selectedDate)}`);
+  };
 
-      <div
-        popover="auto"
-        id="rdp-popover"
-        className="dropdown"
-        style={{ positionAnchor: "--rdp" }}
-      >
-        <DayPicker
-          className="react-day-picker"
-          mode="single"
-          selected={date}
-          onSelect={setDate}
-        />
-      </div>
-    </>
-  );
+  return <DayPicker mode="single" selected={date} onSelect={handleSelect} />;
 }
