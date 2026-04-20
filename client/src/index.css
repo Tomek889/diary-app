@@ -69,22 +69,24 @@ h6 {
   isolation: isolate;
 }
 
+body {
+    padding: 30px;
+}
+
 nav {
     display: flex;
     justify-content: space-around;
-}
-
-.dropdown {
-    padding: 40px;
-    margin-top: 140px;
-    border: 0px;
-    background-color: #e4e6f6;
-    border-radius: 10px;
 }
 
 .dashboard {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    height: 100vh;
+    height: 90vh;
+}
+
+.dashboard-right div {
+    background-color: #d4d8f4;
+    padding: 10px;
+    border-radius: 10px;
 }
