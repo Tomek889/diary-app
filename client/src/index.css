@@ -68,3 +68,8 @@ h6 {
 #__next {
   isolation: isolate;
 }
+
+nav {
+    display: flex;
+    justify-content: space-around;
+}
