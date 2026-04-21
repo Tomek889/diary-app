@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { Link } from "react-router-dom";
 import Calendar from "../components/Calendar";
 
 function rateMood(avg) {
@@ -16,7 +17,7 @@ function percent(value) {
 }
 
 export default function Dashboard() {
-    const [email] = useState(() => localStorage.getItem("userEmail") || "");
+  const [email] = useState(() => localStorage.getItem("userEmail") || "");
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -57,6 +58,11 @@ export default function Dashboard() {
     ].every((val) => val == null);
   }, [stats]);
 
+  const today = new Date();
+  const todayDate = `${today.getFullYear()}-${String(
+    today.getMonth() + 1
+  ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+
   return (
     <div className="dashboard">
       <div className="dashboard-left">
@@ -91,6 +97,9 @@ export default function Dashboard() {
       <div className="dashboard-right">
         <h2>Your Journal</h2>
         <Calendar />
+        <button>
+          <Link to={`/journal/${todayDate}`}>Go to today's entry</Link>
+        </button>
       </div>
     </div>
   );
