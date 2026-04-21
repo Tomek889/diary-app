@@ -1,26 +1,41 @@
 const express = require("express");
 const cors = require("cors");
+const { getStatsByEmail } = require("./db/queries");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 app.use(cors());
 app.use(express.json());
 
-app.get("/api/stats", (req, res) => {
-  const email = req.header("X-User-Email") || "";
+app.get("/api/stats", async (req, res) => {
+  try {
+    const email = req.get("X-User-Email") || "";
+    if (!email) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
 
-  if (!email) {
-    return res.status(401).json({ error: "Unauthorized" });
+    const stats = await getStatsByEmail(email);
+
+    if (!stats) {
+      return res.json({
+        overallTasksCompletion: null,
+        monthTasksCompletion: null,
+        overallMoodAvg: null,
+        monthMoodAvg: null,
+      });
+    }
+
+    return res.json({
+      overallTasksCompletion: stats.overall_tasks_completion,
+      monthTasksCompletion: stats.month_tasks_completion,
+      overallMoodAvg: stats.overall_mood_avg,
+      monthMoodAvg: stats.month_mood_avg,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Internal server error" });
   }
-
-  // test data, todo: connect to db
-  return res.json({
-    overallTasksCompletion: 0.75,
-    monthTasksCompletion: 0.5,
-    overallMoodAvg: 3.5,
-    monthMoodAvg: 4,
-  });
 });
 
 app.listen(PORT, () => {
