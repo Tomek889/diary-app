@@ -9,15 +9,25 @@ async function getEntry(email, entry_date) {
 }
 
 async function getTasks(entry_id) {
-  const { rows } = await pool.query("SELECT * FROM tasks WHERE entry_id = $1", [entry_id]);
+  const { rows } = await pool.query("SELECT * FROM tasks WHERE entry_id = $1", [
+    entry_id,
+  ]);
   return rows;
 }
 
 async function insertUser(email, passwordHash = "zaq1") {
-  const { rows } = await pool.query("INSERT INTO users (email, password) VALUES ($1, $2) RETURNING *", [
-    email,
-    passwordHash,
-  ]);
+  const { rows } = await pool.query(
+    "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING *",
+    [email, passwordHash],
+  );
+  return rows[0];
+}
+
+async function validateUser(email, passwordHash = "zaq1") {
+  const { rows } = await pool.query(
+    "SELECT * FROM users WHERE email = $1 AND password = $2",
+    [email, passwordHash],
+  );
   return rows[0];
 }
 
@@ -63,5 +73,6 @@ module.exports = {
   getEntry,
   getTasks,
   insertUser,
+  validateUser,
   getStatsByEmail,
 };
