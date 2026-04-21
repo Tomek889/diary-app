@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import Calendar from "../components/Calendar";
 
 function rateMood(avg) {
@@ -62,6 +62,10 @@ export default function Dashboard() {
   const todayDate = `${today.getFullYear()}-${String(
     today.getMonth() + 1
   ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+
+  if (!email) {
+    return <Navigate to="/login" replace />;
+  }
 
   return (
     <div className="dashboard">
