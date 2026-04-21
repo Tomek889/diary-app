@@ -70,23 +70,23 @@ h6 {
 }
 
 body {
-    padding: 30px;
+  padding: 30px;
 }
 
 nav {
-    display: flex;
-    justify-content: space-around;
+  display: flex;
+  justify-content: space-around;
 }
 
 .dashboard {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    height: 90vh;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 90vh;
 }
 
 .dashboard-right div {
-    background-color: #d4d8f4;
-    padding: 10px;
-    border-radius: 10px;
+  background-color: #d4d8f4;
+  padding: 10px;
+  border-radius: 10px;
 }

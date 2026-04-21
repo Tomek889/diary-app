@@ -1,21 +1,24 @@
 const pool = require("./db");
 
 async function getEntry(email, entry_date) {
-  await pool.query(
+  const { rows } = await pool.query(
     "SELECT * FROM entries WHERE user_id = (SELECT id FROM users WHERE email = $1) AND entry_date = $2",
     [email, entry_date],
   );
+  return rows[0];
 }
 
 async function getTasks(entry_id) {
-  await pool.query("SELECT * FROM tasks WHERE entry_id = $1", [entry_id]);
+  const { rows } = await pool.query("SELECT * FROM tasks WHERE entry_id = $1", [entry_id]);
+  return rows;
 }
 
 async function insertUser(email, passwordHash = "zaq1") {
-  await pool.query("INSERT INTO users (email, password) VALUES ($1, $2)", [
+  const { rows } = await pool.query("INSERT INTO users (email, password) VALUES ($1, $2) RETURNING *", [
     email,
     passwordHash,
   ]);
+  return rows[0];
 }
 
 async function getStatsByEmail(email) {

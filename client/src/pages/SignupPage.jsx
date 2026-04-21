@@ -3,14 +3,35 @@ import { useNavigate } from "react-router-dom";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email.trim()) return;
-    localStorage.setItem("userEmail", email.trim());
-    navigate("/dashboard");
-    window.location.reload();
+    setError("");
+
+    const cleanEmail = email.trim().toLowerCase();
+    if (!cleanEmail) return;
+
+    try {
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: cleanEmail }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Signup failed");
+
+      localStorage.setItem("userEmail", cleanEmail);
+      navigate("/dashboard");
+      window.location.reload();
+    } catch (err) {
+      setError(err.message);
+
+    }
   }
 
   return (
@@ -28,6 +49,7 @@ export default function SignupPage() {
             />
             <button type="submit">Sign Up</button>
         </form>
+        {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   )
 }
