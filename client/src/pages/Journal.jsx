@@ -1,10 +1,11 @@
 import { useParams, Navigate, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Journal() {
   const navigate = useNavigate();
   const [email] = useState(() => localStorage.getItem("userEmail") || "");
   const { date } = useParams();
+
   const [entry, setEntry] = useState({
     mood: 2,
     energy: 2,
@@ -15,6 +16,66 @@ export default function Journal() {
     workout_done: false,
     meditation_done: false,
   });
+
+  const [tasks, setTasks] = useState([
+    { task_description: "", completed: false },
+  ]);
+
+  const [loadingEntry, setLoadingEntry] = useState(true);
+
+  useEffect(() => {
+    if (!email || !date) return;
+
+    const loadEntry = async () => {
+      setLoadingEntry(true);
+      try {
+        const res = await fetch(`/api/entry?date=${encodeURIComponent(date)}`, {
+          headers: {
+            "Content-Type": "application/json",
+            "X-User-Email": email,
+          },
+        });
+
+        if (res.status === 404) {
+          setLoadingEntry(false);
+          return;
+        }
+
+        if (!res.ok) {
+          throw new Error("Failed to load entry");
+        }
+
+        const data = await res.json();
+
+        setEntry({
+          mood: Number(data.entry.mood ?? 2),
+          energy: Number(data.entry.energy ?? 2),
+          sleep_hours: data.entry.sleep_hours ?? "",
+          thoughts: data.entry.thoughts ?? "",
+          gratitude: data.entry.gratitude ?? "",
+          ate_healthy: Boolean(data.entry.ate_healthy),
+          workout_done: Boolean(data.entry.workout_done),
+          meditation_done: Boolean(data.entry.meditation_done),
+        });
+
+        setTasks(
+          data.tasks?.length
+            ? data.tasks.map((t) => ({
+                task_description: t.task_description ?? "",
+                completed: Boolean(t.completed),
+              }))
+            : [{ task_description: "", completed: false }],
+        );
+      } catch (err) {
+        console.error(err);
+        alert("Error loading entry");
+      } finally {
+        setLoadingEntry(false);
+      }
+    };
+
+    loadEntry();
+  }, [email, date]);
 
   const moodOptions = [
     { value: 0, label: "Awful" },
@@ -31,10 +92,6 @@ export default function Journal() {
     { value: 3, label: "Energized" },
     { value: 4, label: "Full of Energy" },
   ];
-
-  const [tasks, setTasks] = useState([
-    { task_description: "", completed: false },
-  ]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -92,6 +149,10 @@ export default function Journal() {
 
   if (!email) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (loadingEntry) {
+    return <p>Loading entry...</p>;
   }
 
   return (

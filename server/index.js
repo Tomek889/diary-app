@@ -6,6 +6,8 @@ const {
   validateUser,
   insertEntry,
   insertTask,
+  getEntry,
+  getTasks,
 } = require("./db/queries");
 
 const app = express();
@@ -13,6 +15,32 @@ const PORT = 3000;
 
 app.use(cors());
 app.use(express.json());
+
+app.get("/api/entry", async (req, res) => {
+  const email = req.get("X-User-Email") || "";
+  const date = req.query.date;
+
+  try {
+    if (!email || !email.trim()) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+    if (!date) {
+      return res.status(400).json({ error: "Date is required" });
+    }
+
+    const entry = await getEntry(email.trim().toLowerCase(), date);
+    if (!entry) {
+      return res.status(404).json({ error: "Entry not found" });
+    }
+
+    const tasks = await getTasks(entry.id);
+
+    return res.json({ entry, tasks });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 app.post("/api/signup", async (req, res) => {
   try {
