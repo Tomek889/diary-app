@@ -22,6 +22,7 @@ export default function Journal() {
   ]);
 
   const [loadingEntry, setLoadingEntry] = useState(true);
+  const [entryExists, setEntryExists] = useState(false);
 
   useEffect(() => {
     if (!email || !date) return;
@@ -38,6 +39,7 @@ export default function Journal() {
 
         if (res.status === 404) {
           setLoadingEntry(false);
+          setEntryExists(false);
           return;
         }
 
@@ -46,6 +48,7 @@ export default function Journal() {
         }
 
         const data = await res.json();
+        setEntryExists(true);
 
         setEntry({
           mood: Number(data.entry.mood ?? 2),
@@ -123,11 +126,11 @@ export default function Journal() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const endpoint = entryExists ? "/api/update" : "/api/entry";
     const payload = { ...entry, entry_date: date, tasks };
-    console.log("Submitting:", payload);
 
     try {
-      const res = await fetch("/api/entry", {
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -139,7 +142,11 @@ export default function Journal() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to save entry");
 
-      alert("Entry saved successfully!");
+      alert(
+        entryExists
+          ? "Entry updated successfully!"
+          : "Entry saved successfully!",
+      );
       navigate("/dashboard");
     } catch (err) {
       console.error(err);

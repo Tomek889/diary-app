@@ -8,6 +8,8 @@ const {
   insertTask,
   getEntry,
   getTasks,
+  getDatesWithEntries,
+  updateEntry,
 } = require("./db/queries");
 
 const app = express();
@@ -155,6 +157,60 @@ app.post("/api/entry", async (req, res) => {
     }
 
     return res.status(201).json({ entry, message: "Entry saved successfully" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/api/update", async (req, res) => {
+  const email = req.get("X-User-Email") || "";
+  const {
+    entry_date,
+    mood,
+    energy,
+    sleep_hours: hours,
+    thoughts,
+    gratitude,
+    ate_healthy,
+    workout_done,
+    meditation_done,
+    tasks,
+  } = req.body;
+
+  const sleep_hours = hours === "" || hours == null ? null : hours;
+
+  try {
+    if (!email || !email.trim()) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+    if (!entry_date) {
+      return res.status(400).json({ error: "Entry date is required" });
+    }
+    if (hours < 0 || hours > 24) {
+      return res.status(400).json({ error: "Invalid sleep hours" });
+    }
+
+    const entry = await updateEntry(
+      email.trim().toLowerCase(),
+      entry_date,
+      mood,
+      energy,
+      sleep_hours,
+      thoughts,
+      gratitude,
+      ate_healthy,
+      workout_done,
+      meditation_done,
+    );
+
+    for (const task of tasks) {
+      await insertTask(entry.id, task.task_description, task.completed);
+    }
+
+    return res
+      .status(201)
+      .json({ entry, message: "Entry updated successfully" });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Internal server error" });
