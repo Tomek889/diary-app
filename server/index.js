@@ -10,6 +10,7 @@ const {
   getTasks,
   getDatesWithEntries,
   updateEntry,
+  deleteTasks,
 } = require("./db/queries");
 
 const app = express();
@@ -139,7 +140,7 @@ app.post("/api/entry", async (req, res) => {
     ate_healthy,
     workout_done,
     meditation_done,
-    tasks,
+    tasks = [],
   } = req.body;
 
   const sleep_hours = hours === "" || hours == null ? null : hours;
@@ -191,7 +192,7 @@ app.post("/api/update", async (req, res) => {
     ate_healthy,
     workout_done,
     meditation_done,
-    tasks,
+    tasks = [],
   } = req.body;
 
   const sleep_hours = hours === "" || hours == null ? null : hours;
@@ -219,6 +220,8 @@ app.post("/api/update", async (req, res) => {
       workout_done,
       meditation_done,
     );
+
+    await deleteTasks(entry.id);
 
     for (const task of tasks) {
       await insertTask(entry.id, task.task_description, task.completed);

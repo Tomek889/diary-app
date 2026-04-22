@@ -16,6 +16,13 @@ async function getDatesWithEntries(email) {
   return rows.map((row) => row.entry_date);
 }
 
+async function deleteTasks(entry_id) {
+  const { rows } = await pool.query("DELETE FROM tasks WHERE entry_id = $1", [
+    entry_id,
+  ]);
+  return rows[0];
+}
+
 async function updateEntry(
   email,
   entry_date,
@@ -160,4 +167,5 @@ module.exports = {
   insertTask,
   getDatesWithEntries,
   updateEntry,
+  deleteTasks,
 };

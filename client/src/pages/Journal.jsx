@@ -80,14 +80,24 @@ export default function Journal() {
         );
       } catch (err) {
         console.error(err);
-        alert("Error loading entry");
+        setModal({
+          isOpen: true,
+          type: "error",
+          title: "Error",
+          message: "Failed to load entry",
+          titleButton: "Go to Dashboard",
+          action: () => {
+            setModal((prev) => ({ ...prev, isOpen: false }));
+            navigate("/dashboard");
+          },
+        });
       } finally {
         setLoadingEntry(false);
       }
     };
 
     loadEntry();
-  }, [email, date]);
+  }, [email, date, navigate]);
 
   const moodOptions = [
     { value: 0, label: "Awful" },
