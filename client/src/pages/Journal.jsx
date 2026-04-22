@@ -1,10 +1,19 @@
 import { useParams, Navigate, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import Modal from "../components/Modal";
 
 export default function Journal() {
   const navigate = useNavigate();
   const [email] = useState(() => localStorage.getItem("userEmail") || "");
   const { date } = useParams();
+  const [modal, setModal] = useState({
+    isOpen: false,
+    type: "",
+    title: "",
+    message: "",
+    titleButton: "",
+    action: null,
+  });
 
   const [entry, setEntry] = useState({
     mood: 2,
@@ -142,15 +151,29 @@ export default function Journal() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to save entry");
 
-      alert(
-        entryExists
+      setModal({
+        isOpen: true,
+        type: "success",
+        title: "Success",
+        message: entryExists
           ? "Entry updated successfully!"
           : "Entry saved successfully!",
-      );
-      navigate("/dashboard");
+        titleButton: "Go to Dashboard",
+        action: () => {
+          setModal((prev) => ({ ...prev, isOpen: false }));
+          navigate("/dashboard");
+        },
+      });
     } catch (err) {
       console.error(err);
-      alert("Error saving entry");
+      setModal({
+        isOpen: true,
+        type: "error",
+        title: "Error",
+        message: "Failed to save entry",
+        titleButton: "Close",
+        action: () => setModal((prev) => ({ ...prev, isOpen: false })),
+      });
     }
   };
 
@@ -295,6 +318,17 @@ export default function Journal() {
 
         <button type="submit">Save Entry</button>
       </form>
+
+      {modal.isOpen && (
+        <Modal
+          isOpen={modal.isOpen}
+          type={modal.type}
+          title={modal.title}
+          message={modal.message}
+          titleButton={modal.titleButton}
+          action={modal.action}
+        />
+      )}
     </div>
   );
 }

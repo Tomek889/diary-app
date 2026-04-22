@@ -1,13 +1,13 @@
 import { CheckCircle, AlertOctagon } from "lucide-react";
 
-export default function Modal(
+export default function Modal({
   isOpen,
   type,
   title,
   message,
   titleButton,
   action,
-) {
+}) {
   if (!isOpen) return null;
 
   const iconMap = {
