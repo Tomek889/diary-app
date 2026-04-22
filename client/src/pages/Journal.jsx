@@ -1,7 +1,8 @@
-import { useParams, Navigate } from "react-router-dom";
+import { useParams, Navigate, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 export default function Journal() {
+  const navigate = useNavigate();
   const [email] = useState(() => localStorage.getItem("userEmail") || "");
   const { date } = useParams();
   const [entry, setEntry] = useState({
@@ -67,25 +68,25 @@ export default function Journal() {
     e.preventDefault();
     const payload = { ...entry, entry_date: date, tasks };
     console.log("Submitting:", payload);
-    
+
     try {
-        const res = await fetch("/api/entry", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-User-Email": email,
-            },
-            body: JSON.stringify(payload),
-        });
+      const res = await fetch("/api/entry", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-User-Email": email,
+        },
+        body: JSON.stringify(payload),
+      });
 
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Failed to save entry");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to save entry");
 
-        alert("Entry saved successfully!");
-        return <Navigate to="/dashboard" />;
+      alert("Entry saved successfully!");
+      navigate("/dashboard");
     } catch (err) {
-        console.error(err);
-        alert("Error saving entry");
+      console.error(err);
+      alert("Error saving entry");
     }
   };
 
