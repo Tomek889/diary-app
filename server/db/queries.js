@@ -8,6 +8,47 @@ async function getEntry(email, entry_date) {
   return rows[0];
 }
 
+async function getDatesWithEntries(email) {
+  const { rows } = await pool.query(
+    "SELECT DISTINCT entry_date FROM entries WHERE user_id = (SELECT id FROM users WHERE email = $1)",
+    [email],
+  );
+  return rows.map((row) => row.entry_date);
+}
+
+async function updateEntry(
+  email,
+  entry_date,
+  mood,
+  energy,
+  sleep_hours,
+  thoughts,
+  gratitude,
+  ate_healthy,
+  workout_done,
+  meditation_done,
+) {
+  const { rows } = await pool.query(
+    `UPDATE entries
+       SET mood = $3, energy = $4, sleep_hours = $5, thoughts = $6, gratitude = $7, ate_healthy = $8, workout_done = $9, meditation_done = $10
+       WHERE user_id = (SELECT id FROM users WHERE email = $1) AND entry_date = $2
+       RETURNING *`,
+    [
+      email,
+      entry_date,
+      mood,
+      energy,
+      sleep_hours,
+      thoughts,
+      gratitude,
+      ate_healthy,
+      workout_done,
+      meditation_done,
+    ],
+  );
+  return rows[0];
+}
+
 async function insertEntry(
   email,
   entry_date,
@@ -41,11 +82,11 @@ async function insertEntry(
 }
 
 async function insertTask(entry_id, task_description, completed) {
-    const { rows } = await pool.query(
-        `INSERT INTO tasks (entry_id, task_description, completed) VALUES ($1, $2, $3) RETURNING *`,
-        [entry_id, task_description, completed]
-    );
-    return rows[0];
+  const { rows } = await pool.query(
+    `INSERT INTO tasks (entry_id, task_description, completed) VALUES ($1, $2, $3) RETURNING *`,
+    [entry_id, task_description, completed],
+  );
+  return rows[0];
 }
 
 async function getTasks(entry_id) {
@@ -117,4 +158,6 @@ module.exports = {
   getStatsByEmail,
   insertEntry,
   insertTask,
+  getDatesWithEntries,
+  updateEntry,
 };
