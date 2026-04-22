@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DayPicker } from "react-day-picker";
 import { useNavigate } from "react-router-dom";
 import "react-day-picker/dist/style.css";
@@ -12,7 +12,33 @@ function convertDate(date) {
 
 export default function Calendar() {
   const [date, setDate] = useState();
+  const [enteredDates, setEnteredDates] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const email = localStorage.getItem("userEmail");
+    if (!email) return;
+
+    fetch("/api/dates", {
+      headers: {
+        "Content-Type": "application/json",
+        "X-User-Email": email,
+      },
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          throw new Error("Failed to load dates.");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        const dates = data.dates.map((d) => new Date(d));
+        setEnteredDates(dates);
+      })
+      .catch((err) => {
+        console.error("Error loading dates:", err);
+      });
+  }, []);
 
   const handleSelect = (selectedDate) => {
     if (!selectedDate) return;
@@ -20,5 +46,13 @@ export default function Calendar() {
     navigate(`/journal/${convertDate(selectedDate)}`);
   };
 
-  return <DayPicker mode="single" selected={date} onSelect={handleSelect} />;
+  return (
+    <DayPicker
+      mode="single"
+      selected={date}
+      onSelect={handleSelect}
+      modifiers={{ entered: enteredDates }}
+      modifiersClassNames={{ entered: "entered-day" }}
+    />
+  );
 }

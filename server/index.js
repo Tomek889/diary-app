@@ -18,6 +18,22 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
+app.get("/api/dates", async (req, res) => {
+  const email = req.get("X-User-Email") || "";
+
+  try {
+    if (!email || !email.trim()) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    const dates = await getDatesWithEntries(email.trim().toLowerCase());
+    return res.json({ dates });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.get("/api/entry", async (req, res) => {
   const email = req.get("X-User-Email") || "";
   const date = req.query.date;

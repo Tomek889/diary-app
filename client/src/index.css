@@ -90,3 +90,7 @@ nav {
   padding: 10px;
   border-radius: 10px;
 }
+
+.entered-day {
+    background-color: red;
+}
