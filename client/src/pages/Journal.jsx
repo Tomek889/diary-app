@@ -67,7 +67,26 @@ export default function Journal() {
     e.preventDefault();
     const payload = { ...entry, entry_date: date, tasks };
     console.log("Submitting:", payload);
-    // todo: fetch data
+    
+    try {
+        const res = await fetch("/api/entry", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-User-Email": email,
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to save entry");
+
+        alert("Entry saved successfully!");
+        return <Navigate to="/dashboard" />;
+    } catch (err) {
+        console.error(err);
+        alert("Error saving entry");
+    }
   };
 
   if (!email) {

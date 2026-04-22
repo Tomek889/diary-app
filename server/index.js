@@ -1,6 +1,12 @@
 const express = require("express");
 const cors = require("cors");
-const { getStatsByEmail, insertUser, validateUser, insertEntry, insertTask } = require("./db/queries");
+const {
+  getStatsByEmail,
+  insertUser,
+  validateUser,
+  insertEntry,
+  insertTask,
+} = require("./db/queries");
 
 const app = express();
 const PORT = 3000;
@@ -76,12 +82,12 @@ app.get("/api/stats", async (req, res) => {
 });
 
 app.post("/api/entry", async (req, res) => {
+  const email = req.get("X-User-Email") || "";
   const {
-    email,
     entry_date,
     mood,
     energy,
-    sleep_hours,
+    sleep_hours: hours,
     thoughts,
     gratitude,
     ate_healthy,
@@ -89,6 +95,8 @@ app.post("/api/entry", async (req, res) => {
     meditation_done,
     tasks,
   } = req.body;
+
+  const sleep_hours = hours === "" || hours == null ? null : hours;
 
   try {
     if (!email || !email.trim()) {
@@ -110,8 +118,6 @@ app.post("/api/entry", async (req, res) => {
       workout_done,
       meditation_done,
     );
-
-    const entryId = entryResult.rows[0].id;
 
     for (const task of tasks) {
       await insertTask(entry.id, task.task_description, task.completed);
