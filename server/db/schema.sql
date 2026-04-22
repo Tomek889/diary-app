@@ -14,8 +14,8 @@ CREATE TABLE entries (
     thoughts TEXT,
     gratitude TEXT,
     ate_healthy BOOLEAN,
-    workout_done BOOLEAN DEFAULT false,
-    meditation_done BOOLEAN DEFAULT false,
+    workout_done BOOLEAN,
+    meditation_done BOOLEAN,
     UNIQUE(user_id, entry_date)
 );
 
