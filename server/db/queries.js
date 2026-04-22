@@ -8,6 +8,46 @@ async function getEntry(email, entry_date) {
   return rows[0];
 }
 
+async function insertEntry(
+  email,
+  entry_date,
+  mood,
+  energy,
+  sleep_hours,
+  thoughts,
+  gratitude,
+  ate_healthy,
+  workout_done,
+  meditation_done,
+) {
+  const { rows } = await pool.query(
+    `INSERT INTO entries (user_id, entry_date, mood, energy, sleep_hours, thoughts, gratitude, ate_healthy, workout_done, meditation_done)
+     VALUES ((SELECT id FROM users WHERE email = $1), $2, $3, $4, $5, $6, $7, $8, $9, $10)
+     RETURNING *`,
+    [
+      email,
+      entry_date,
+      mood,
+      energy,
+      sleep_hours,
+      thoughts,
+      gratitude,
+      ate_healthy,
+      workout_done,
+      meditation_done,
+    ],
+  );
+  return rows[0];
+}
+
+async function insertTask(entry_id, task_description, completed) {
+    const { rows } = await pool.query(
+        `INSERT INTO tasks (entry_id, task_description, completed) VALUES ($1, $2, $3) RETURNING *`,
+        [entry_id, task_description, completed]
+    );
+    return rows[0];
+}
+
 async function getTasks(entry_id) {
   const { rows } = await pool.query("SELECT * FROM tasks WHERE entry_id = $1", [
     entry_id,
@@ -75,4 +115,6 @@ module.exports = {
   insertUser,
   validateUser,
   getStatsByEmail,
+  insertEntry,
+  insertTask,
 };

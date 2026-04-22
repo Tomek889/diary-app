@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { getStatsByEmail, insertUser, validateUser } = require("./db/queries");
+const { getStatsByEmail, insertUser, validateUser, insertEntry, insertTask } = require("./db/queries");
 
 const app = express();
 const PORT = 3000;
@@ -69,6 +69,55 @@ app.get("/api/stats", async (req, res) => {
       overallMoodAvg: stats.overall_mood_avg,
       monthMoodAvg: stats.month_mood_avg,
     });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/api/entry", async (req, res) => {
+  const {
+    email,
+    entry_date,
+    mood,
+    energy,
+    sleep_hours,
+    thoughts,
+    gratitude,
+    ate_healthy,
+    workout_done,
+    meditation_done,
+    tasks,
+  } = req.body;
+
+  try {
+    if (!email || !email.trim()) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+    if (!entry_date) {
+      return res.status(400).json({ error: "Entry date is required" });
+    }
+
+    const entry = await insertEntry(
+      email.trim().toLowerCase(),
+      entry_date,
+      mood,
+      energy,
+      sleep_hours,
+      thoughts,
+      gratitude,
+      ate_healthy,
+      workout_done,
+      meditation_done,
+    );
+
+    const entryId = entryResult.rows[0].id;
+
+    for (const task of tasks) {
+      await insertTask(entry.id, task.task_description, task.completed);
+    }
+
+    return res.status(201).json({ entry, message: "Entry saved successfully" });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Internal server error" });
