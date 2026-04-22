@@ -1,11 +1,210 @@
-import { useParams } from "react-router-dom";
+import { useParams, Navigate } from "react-router-dom";
+import { useState } from "react";
 
 export default function Journal() {
+  const [email] = useState(() => localStorage.getItem("userEmail") || "");
   const { date } = useParams();
+  const [entry, setEntry] = useState({
+    mood: 2,
+    energy: 2,
+    sleep_hours: "",
+    thoughts: "",
+    gratitude: "",
+    ate_healthy: false,
+    workout_done: false,
+    meditation_done: false,
+  });
+
+  const moodOptions = [
+    { value: 0, label: "Awful" },
+    { value: 1, label: "Bad" },
+    { value: 2, label: "Neutral" },
+    { value: 3, label: "Great" },
+    { value: 4, label: "Amazing" },
+  ];
+
+  const energyOptions = [
+    { value: 0, label: "Exhausted" },
+    { value: 1, label: "Low" },
+    { value: 2, label: "Neutral" },
+    { value: 3, label: "Energized" },
+    { value: 4, label: "Full of Energy" },
+  ];
+
+  const [tasks, setTasks] = useState([
+    { task_description: "", completed: false },
+  ]);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setEntry((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const addTask = () => {
+    setTasks((prev) => [...prev, { task_description: "", completed: false }]);
+  };
+
+  const removeTask = (index) => {
+    setTasks(tasks.filter((_, i) => i !== index));
+  };
+
+  const handleTaskChange = (index, value) => {
+    const newTasks = [...tasks];
+    newTasks[index].task_description = value;
+    setTasks(newTasks);
+  };
+
+  const handleTaskDone = (index, done) => {
+    const newTasks = [...tasks];
+    newTasks[index].completed = done;
+    setTasks(newTasks);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const payload = { ...entry, entry_date: date, tasks };
+    console.log("Submitting:", payload);
+    // todo: fetch data
+  };
+
+  if (!email) {
+    return <Navigate to="/login" replace />;
+  }
+
   return (
     <div>
       <h1>Journal</h1>
-      <p>Date: {date}</p>
+      <form onSubmit={handleSubmit} className="journal-form">
+        <p>Journal for {date}</p>
+        <div>
+          <label>Thoughts</label>
+          <textarea
+            name="thoughts"
+            value={entry.thoughts}
+            onChange={handleChange}
+            placeholder="How was your day?"
+          />
+        </div>
+        <div>
+          <label>Sleep Hours</label>
+          <input
+            type="number"
+            name="sleep_hours"
+            step="0.5"
+            value={entry.sleep_hours}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="tasks-section">
+          <h4>Tasks</h4>
+          {tasks.map((task, index) => (
+            <div key={index} className="task-item">
+              <input
+                type="checkbox"
+                name="taskDone"
+                id={`taskDone-${index}`}
+                checked={task.completed}
+                onChange={(e) => handleTaskDone(index, e.target.checked)}
+              />
+              <input
+                type="text"
+                value={task.task_description}
+                onChange={(e) => handleTaskChange(index, e.target.value)}
+                placeholder={`Task ${index + 1}`}
+              />
+              <button type="button" onClick={() => removeTask(index)}>
+                Remove
+              </button>
+            </div>
+          ))}
+          <button type="button" onClick={addTask}>
+            + Add Task
+          </button>
+        </div>
+        <div>
+          <label>Gratitude</label>
+          <textarea
+            name="gratitude"
+            value={entry.gratitude}
+            onChange={handleChange}
+            placeholder="What are you grateful for?"
+          />
+        </div>
+        <div className="mood-selector">
+          <p>How are you feeling?</p>
+          <div>
+            {moodOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setEntry({ ...entry, mood: option.value })}
+                style={{
+                  backgroundColor:
+                    entry.mood === option.value ? "#d1e7ff" : "white",
+                }}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="energy-selector">
+          <p>How is your energy level?</p>
+          <div>
+            {energyOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setEntry({ ...entry, energy: option.value })}
+                style={{
+                  backgroundColor:
+                    entry.energy === option.value ? "#d1e7ff" : "white",
+                }}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <label>
+            <input
+              type="checkbox"
+              name="ate_healthy"
+              checked={entry.ate_healthy}
+              onChange={handleChange}
+            />
+            Ate Healthy?
+          </label>
+        </div>
+        <div>
+          <label>
+            <input
+              type="checkbox"
+              name="workout_done"
+              checked={entry.workout_done}
+              onChange={handleChange}
+            />
+            Workout Done?
+          </label>
+        </div>
+        <div>
+          <label>
+            <input
+              type="checkbox"
+              name="meditation_done"
+              checked={entry.meditation_done}
+              onChange={handleChange}
+            />
+            Meditation Done?
+          </label>
+        </div>
+
+        <button type="submit">Save Entry</button>
+      </form>
     </div>
   );
 }

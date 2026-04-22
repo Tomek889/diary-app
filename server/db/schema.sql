@@ -10,7 +10,7 @@ CREATE TABLE entries (
     entry_date DATE NOT NULL,
     mood INTEGER CHECK (mood >= 0 AND mood <= 4),
     energy INTEGER CHECK (energy >= 0 AND energy <= 4),
-    sleep_hours DECIMAL(4,2),
+    sleep_hours DECIMAL(3,1),
     thoughts TEXT,
     gratitude TEXT,
     ate_healthy BOOLEAN,

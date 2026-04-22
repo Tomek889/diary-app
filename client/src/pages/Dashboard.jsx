@@ -4,10 +4,10 @@ import Calendar from "../components/Calendar";
 
 function rateMood(avg) {
   if (avg == null) return "No data yet";
-  if (avg < 1) return "Awful";
-  if (avg < 2) return "Bad";
-  if (avg < 3) return "Neutral";
-  if (avg < 4) return "Great";
+  if (avg < 0.8) return "Awful";
+  if (avg < 1.6) return "Bad";
+  if (avg < 2.4) return "Neutral";
+  if (avg < 3.2) return "Great";
   return "Amazing";
 }
 
