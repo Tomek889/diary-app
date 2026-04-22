@@ -175,6 +175,8 @@ export default function Journal() {
             type="number"
             name="sleep_hours"
             step="0.5"
+            max={24}
+            min={0}
             value={entry.sleep_hours}
             onChange={handleChange}
           />

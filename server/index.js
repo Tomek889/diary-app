@@ -133,6 +133,9 @@ app.post("/api/entry", async (req, res) => {
     if (!entry_date) {
       return res.status(400).json({ error: "Entry date is required" });
     }
+    if (hours < 0 || hours > 24) {
+      return res.status(400).json({ error: "Invalid sleep hours" });
+    }
 
     const entry = await insertEntry(
       email.trim().toLowerCase(),
