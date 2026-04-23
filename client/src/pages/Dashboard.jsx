@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, Navigate } from "react-router-dom";
 import Calendar from "../components/Calendar";
+import CountUp from "../components/CountUp";
 
 function rateMood(avg) {
   if (avg == null) return "No data yet";
@@ -9,11 +10,6 @@ function rateMood(avg) {
   if (avg < 2.4) return "Neutral";
   if (avg < 3.2) return "Great";
   return "Amazing";
-}
-
-function percent(value) {
-  if (value == null) return "No data yet";
-  return `${Math.round(value * 100)}%`;
 }
 
 export default function Dashboard() {
@@ -81,7 +77,24 @@ export default function Dashboard() {
           <div className="stats-grid">
             <div className="stat-card">
               <h2>Tasks completed (this month)</h2>
-              <p>{percent(stats?.monthTasksCompletion)}</p>
+              <p>
+                {stats?.monthTasksCompletion != null ? (
+                  <>
+                    <CountUp
+                      from={0}
+                      to={Math.round(stats.monthTasksCompletion * 100)}
+                      separator=","
+                      direction="up"
+                      duration={1.5}
+                      className="count-up-text"
+                      delay={0.1}
+                    />
+                    {""}%
+                  </>
+                ) : (
+                  "No data yet"
+                )}
+              </p>
             </div>
             <div className="stat-card">
               <h2>This month's mood</h2>
@@ -89,18 +102,61 @@ export default function Dashboard() {
             </div>
             <div className="stat-card">
               <h2>Number of workouts this month</h2>
-              <p>{stats?.workoutCount || 0}</p>
+              <p>
+                {stats?.workoutCount != null ? (
+                  <CountUp
+                    from={0}
+                    to={stats.workoutCount}
+                    separator=","
+                    direction="up"
+                    duration={1}
+                    className="count-up-text"
+                    delay={0.1}
+                  />
+                ) : (
+                  "No data yet"
+                )}
+              </p>
             </div>
             <div className="stat-card">
               <h2>Number of meditation sessions this month</h2>
-              <p>{stats?.meditationCount || 0}</p>
+              <p>
+                {stats?.meditationCount != null ? (
+                  <>
+                    <CountUp
+                      from={0}
+                      to={stats.meditationCount}
+                      separator=","
+                      direction="up"
+                      duration={1.5}
+                      className="count-up-text"
+                      delay={0.1}
+                    />
+                  </>
+                ) : (
+                  "No data yet"
+                )}
+              </p>
             </div>
             <div className="stat-card">
               <h2>Average sleep duration this month</h2>
               <p>
-                {stats?.averageSleepDuration
-                  ? `${Math.round(stats.averageSleepDuration)} hrs`
-                  : "No data yet"}
+                {stats?.averageSleepDuration != null ? (
+                  <>
+                    <CountUp
+                      from={0}
+                      to={Math.round(stats.averageSleepDuration)}
+                      separator=","
+                      direction="up"
+                      duration={1.5}
+                      className="count-up-text"
+                      delay={0.1}
+                    />{" "}
+                    hrs
+                  </>
+                ) : (
+                  "No data yet"
+                )}
               </p>
             </div>
           </div>

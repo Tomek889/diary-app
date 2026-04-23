@@ -75,21 +75,80 @@ body {
 }
 
 .dashboard {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  min-height: calc(100vh - 200px);
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  gap: 24px;
+  align-items: start;
 }
 
-.dashboard-right div {
-  background-color: #d4d8f4;
-  padding: 10px;
+.dashboard-left,
+.dashboard-right {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.dashboard h1 {
+  margin-bottom: 18px;
+  font-size: 1.8rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.stat-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 18px;
+  background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+}
+
+.stat-card h2 {
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+.stat-card p {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.1;
+}
+
+.count-up-text {
+  font-variant-numeric: tabular-nums;
+}
+
+.dashboard-right {
+  position: sticky;
+  top: 92px;
+}
+
+.dashboard-right h2 {
+  margin-bottom: 16px;
+}
+
+.today-entry-btn {
+  display: inline-flex;
+  margin-top: 16px;
+  padding: 10px 14px;
   border-radius: 10px;
+  background: #eef2ff;
+  color: #4338ca;
+  text-decoration: none;
+  font-weight: 600;
+  border: 1px solid #c7d2fe;
 }
 
-.entered-day {
-  background-color: #99a7e1;
-  border-radius: 50%;
+.today-entry-btn:hover {
+  background: #e0e7ff;
 }
 
 nav {
@@ -537,4 +596,10 @@ input[type="checkbox"] {
 
 .modal-button:hover {
   background: #4338ca;
+}
+
+.entered-day {
+  background: #d1fae5;
+  color: #065f46;
+  border-radius: 40%;
 }
