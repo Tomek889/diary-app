@@ -12,6 +12,7 @@ const {
   updateEntry,
   deleteTasks,
 } = require("./db/queries");
+const { generatePdf } = require("./pdf/journalPdf");
 
 const app = express();
 const PORT = 3000;
@@ -230,6 +231,32 @@ app.post("/api/update", async (req, res) => {
     return res
       .status(201)
       .json({ entry, message: "Entry updated successfully" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/api/entry/:date/pdf", async (req, res) => {
+  try {
+    const email = req.get("X-User-Email") || "";
+    const date = req.params.date;
+
+    if (!email) return res.status(401).json({ error: "Unauthorized" });
+    if (!date) return res.status(400).json({ error: "Date is required" });
+
+    const entry = await getEntry(email, date);
+    if (!entry) return res.status(404).json({ error: "Entry not found" });
+
+    const tasks = await getTasks(entry.id);
+    const pdfBuffer = await generatePdf({ entry, tasks, email, date });
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=journal-${date}.pdf`,
+    );
+    return res.send(pdfBuffer);
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Internal server error" });
