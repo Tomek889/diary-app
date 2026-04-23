@@ -19,11 +19,18 @@ export default function Layout() {
   return (
     <>
       <nav>
-        <Link to="/">Home</Link>
-        {!email && <Link to="/signup">Sign Up</Link>}
-        {!email && <Link to="/login">Log In</Link>}
-        {email && <Link to="/dashboard">Dashboard</Link>}
-        {email && <button onClick={handleLogout}>Log Out</button>}
+        <p className="logo">Diary App</p>
+        <div className="pagesNav">
+          <Link to="/">Home</Link>
+          {email && <Link to="/dashboard">Dashboard</Link>}
+        </div>
+        {!email && (
+          <div className="auth-links">
+            <Link to="/signup">Sign Up</Link>
+            <Link to="/login">Log In</Link>
+          </div>
+        )}
+        <div>{email && <button onClick={handleLogout}>Log Out</button>}</div>
       </nav>
 
       <main>

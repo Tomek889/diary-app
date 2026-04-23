@@ -74,16 +74,11 @@ body {
   padding: 30px;
 }
 
-nav {
-  display: flex;
-  justify-content: space-around;
-}
-
 .dashboard {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  height: 90vh;
+  min-height: calc(100vh - 200px);
 }
 
 .dashboard-right div {
@@ -94,4 +89,65 @@ nav {
 
 .entered-day {
   background-color: red;
+}
+
+nav {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 50px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+.pagesNav {
+    display: flex;
+    gap: 30px;
+}
+
+nav a,
+nav button {
+  text-decoration: none;
+  color: #111827;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+
+nav a:hover,
+nav button:hover {
+  background: #f3f4f6;
+}
+
+main {
+  padding: 24px;
+}
+
+.home {
+  min-height: calc(100vh - 200px);
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.home-content {
+  max-width: 700px;
+}
+
+.home h1 {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.home p {
+  font-size: 1.1rem;
+  color: #4b5563;
+}
+
+.logo {
+  font-size: 1.6rem;
+  font-weight: 700;
 }
