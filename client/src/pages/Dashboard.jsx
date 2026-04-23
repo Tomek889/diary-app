@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Link, Navigate } from "react-router-dom";
 import Calendar from "../components/Calendar";
 import CountUp from "../components/CountUp";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 function rateMood(avg) {
   if (avg == null) return "No data yet";
@@ -21,7 +22,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (!email) return;
 
-    fetch("/api/stats", {
+    fetch(`${API_URL}/api/stats`, {
       headers: {
         "Content-Type": "application/json",
         "X-User-Email": email,

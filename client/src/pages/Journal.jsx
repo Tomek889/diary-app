@@ -1,6 +1,7 @@
 import { useParams, Navigate, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Modal from "../components/Modal";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export default function Journal() {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ export default function Journal() {
     const loadEntry = async () => {
       setLoadingEntry(true);
       try {
-        const res = await fetch(`/api/entry?date=${encodeURIComponent(date)}`, {
+        const res = await fetch(`${API_URL}/api/entry?date=${encodeURIComponent(date)}`, {
           headers: {
             "Content-Type": "application/json",
             "X-User-Email": email,
@@ -144,7 +145,7 @@ export default function Journal() {
   };
 
   const saveEntry = async ({ showSuccessModal = true } = {}) => {
-    const endpoint = entryExists ? "/api/update" : "/api/entry";
+    const endpoint = entryExists ? `${API_URL}/api/update` : `${API_URL}/api/entry`;
     const cleanedTasks = tasks.filter((t) => t.task_description.trim() !== "");
     const payload = { ...entry, entry_date: date, tasks: cleanedTasks };
 
@@ -201,7 +202,7 @@ export default function Journal() {
       await saveEntry({ showSuccessModal: true });
 
       const newTab = window.open("", "_blank");
-      const res = await fetch(`/api/entry/${encodeURIComponent(date)}/pdf`, {
+      const res = await fetch(`${API_URL}/api/entry/${encodeURIComponent(date)}/pdf`, {
         headers: {
           "Content-Type": "application/json",
           "X-User-Email": email,
