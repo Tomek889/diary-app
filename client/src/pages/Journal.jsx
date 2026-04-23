@@ -235,11 +235,12 @@ export default function Journal() {
   }
 
   return (
-    <div>
-      <h1>Journal</h1>
+    <div className="journal-page">
+      <h1 className="journal-title">Journal</h1>
       <form onSubmit={handleSubmit} className="journal-form">
-        <p>Journal for {date}</p>
-        <div>
+        <p className="journal-date">Journal for {date}</p>
+
+        <div className="form-group">
           <label>Thoughts</label>
           <textarea
             name="thoughts"
@@ -248,7 +249,8 @@ export default function Journal() {
             placeholder="How was your day?"
           />
         </div>
-        <div>
+
+        <div className="form-group">
           <label>Sleep Hours</label>
           <input
             type="number"
@@ -260,6 +262,7 @@ export default function Journal() {
             onChange={handleChange}
           />
         </div>
+
         <div className="tasks-section">
           <h4>Tasks</h4>
           {tasks.map((task, index) => (
@@ -277,16 +280,25 @@ export default function Journal() {
                 onChange={(e) => handleTaskChange(index, e.target.value)}
                 placeholder={`Task ${index + 1}`}
               />
-              <button type="button" onClick={() => removeTask(index)}>
+              <button
+                type="button"
+                className="btn-ghost remove-task-btn"
+                onClick={() => removeTask(index)}
+              >
                 Remove
               </button>
             </div>
           ))}
-          <button type="button" onClick={addTask}>
+          <button
+            type="button"
+            className="btn-ghost add-task-btn"
+            onClick={addTask}
+          >
             + Add Task
           </button>
         </div>
-        <div>
+
+        <div className="form-group">
           <label>Gratitude</label>
           <textarea
             name="gratitude"
@@ -295,6 +307,7 @@ export default function Journal() {
             placeholder="What are you grateful for?"
           />
         </div>
+
         <div className="mood-selector">
           <p>How are you feeling?</p>
           <div>
@@ -313,6 +326,7 @@ export default function Journal() {
             ))}
           </div>
         </div>
+
         <div className="energy-selector">
           <p>How is your energy level?</p>
           <div>
@@ -331,6 +345,7 @@ export default function Journal() {
             ))}
           </div>
         </div>
+
         <div>
           <label>
             <input
@@ -342,6 +357,7 @@ export default function Journal() {
             Ate Healthy?
           </label>
         </div>
+
         <div>
           <label>
             <input
@@ -353,6 +369,7 @@ export default function Journal() {
             Workout Done?
           </label>
         </div>
+
         <div>
           <label>
             <input
@@ -365,8 +382,14 @@ export default function Journal() {
           </label>
         </div>
 
-        <button type="submit">Save Entry</button>
-        <button type="button" onClick={handleGeneratePdf}>
+        <button type="submit" className="btn-primary form-action-btn">
+          Save Entry
+        </button>
+        <button
+          type="button"
+          className="btn-ghost form-action-btn generate-pdf-btn"
+          onClick={handleGeneratePdf}
+        >
           Save and Generate PDF
         </button>
       </form>
