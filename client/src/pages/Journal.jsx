@@ -143,24 +143,24 @@ export default function Journal() {
     setTasks(newTasks);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const saveEntry = async ({ showSuccessModal = true } = {}) => {
     const endpoint = entryExists ? "/api/update" : "/api/entry";
-    const payload = { ...entry, entry_date: date, tasks };
+    const cleanedTasks = tasks.filter((t) => t.task_description.trim() !== "");
+    const payload = { ...entry, entry_date: date, tasks: cleanedTasks };
 
-    try {
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-User-Email": email,
-        },
-        body: JSON.stringify(payload),
-      });
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-User-Email": email,
+      },
+      body: JSON.stringify(payload),
+    });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to save entry");
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to save entry");
 
+    if (showSuccessModal) {
       setModal({
         isOpen: true,
         type: "success",
@@ -174,6 +174,13 @@ export default function Journal() {
           navigate("/dashboard");
         },
       });
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await saveEntry({ showSuccessModal: true });
     } catch (err) {
       console.error(err);
       setModal({
@@ -181,6 +188,36 @@ export default function Journal() {
         type: "error",
         title: "Error",
         message: "Failed to save entry",
+        titleButton: "Close",
+        action: () => setModal((prev) => ({ ...prev, isOpen: false })),
+      });
+    }
+  };
+
+  const handleGeneratePdf = async () => {
+    try {
+      await saveEntry({ showSuccessModal: true });
+
+      const newTab = window.open("", "_blank");
+      const res = await fetch(`/api/entry/${encodeURIComponent(date)}/pdf`, {
+        headers: {
+          "Content-Type": "application/json",
+          "X-User-Email": email,
+        },
+      });
+      if (!res.ok) throw new Error("Failed to generate PDF");
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      if (newTab) newTab.location.href = url;
+    } catch (err) {
+      console.error(err);
+      setModal({
+        isOpen: true,
+        type: "error",
+        title: "Error",
+        message: "Could not save entry and generate PDF",
         titleButton: "Close",
         action: () => setModal((prev) => ({ ...prev, isOpen: false })),
       });
@@ -327,6 +364,9 @@ export default function Journal() {
         </div>
 
         <button type="submit">Save Entry</button>
+        <button type="button" onClick={handleGeneratePdf}>
+          Save and Generate PDF
+        </button>
       </form>
 
       {modal.isOpen && (
