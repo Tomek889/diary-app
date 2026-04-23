@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { DayPicker } from "react-day-picker";
 import { useNavigate } from "react-router-dom";
 import "react-day-picker/dist/style.css";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 function convertDate(date) {
   const year = date.getFullYear();
@@ -19,7 +20,7 @@ export default function Calendar() {
     const email = localStorage.getItem("userEmail");
     if (!email) return;
 
-    fetch("/api/dates", {
+    fetch(`${API_URL}/api/dates`, {
       headers: {
         "Content-Type": "application/json",
         "X-User-Email": email,
