@@ -160,6 +160,8 @@ export default function Journal() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Failed to save entry");
 
+    setEntryExists(true);
+
     if (showSuccessModal) {
       setModal({
         isOpen: true,
