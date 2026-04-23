@@ -51,9 +51,10 @@ export default function Dashboard() {
   const noData = useMemo(() => {
     if (!stats) return true;
     return [
-      stats.overallTasksCompletion,
+      stats.workoutCount,
+      stats.meditationCount,
       stats.monthTasksCompletion,
-      stats.overallMoodAvg,
+      stats.averageSleepDuration,
       stats.monthMoodAvg,
     ].every((val) => val == null);
   }, [stats]);
@@ -79,20 +80,28 @@ export default function Dashboard() {
         {!loading && !error && (
           <div className="stats-grid">
             <div className="stat-card">
-              <h2>Tasks completed (overall)</h2>
-              <p>{percent(stats?.overallTasksCompletion)}</p>
-            </div>
-            <div className="stat-card">
               <h2>Tasks completed (this month)</h2>
               <p>{percent(stats?.monthTasksCompletion)}</p>
             </div>
             <div className="stat-card">
-              <h2>Overall mood</h2>
-              <p>{rateMood(stats?.overallMoodAvg)}</p>
-            </div>
-            <div className="stat-card">
               <h2>This month's mood</h2>
               <p>{rateMood(stats?.monthMoodAvg)}</p>
+            </div>
+            <div className="stat-card">
+              <h2>Number of workouts this month</h2>
+              <p>{stats?.workoutCount || 0}</p>
+            </div>
+            <div className="stat-card">
+              <h2>Number of meditation sessions this month</h2>
+              <p>{stats?.meditationCount || 0}</p>
+            </div>
+            <div className="stat-card">
+              <h2>Average sleep duration this month</h2>
+              <p>
+                {stats?.averageSleepDuration
+                  ? `${Math.round(stats.averageSleepDuration)} hrs`
+                  : "No data yet"}
+              </p>
             </div>
           </div>
         )}

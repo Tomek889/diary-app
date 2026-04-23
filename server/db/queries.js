@@ -124,11 +124,15 @@ async function getStatsByEmail(email) {
     `
     SELECT
       (
-        SELECT AVG(CASE WHEN t.completed THEN 1.0 ELSE 0.0 END)
-        FROM entries e
-        JOIN tasks t ON t.entry_id = e.id
-        WHERE e.user_id = u.id
-      ) AS overall_tasks_completion,
+        SELECT COUNT(*)
+        FROM entries
+        WHERE workout_done = TRUE AND user_id = u.id AND entry_date >= date_trunc('month', CURRENT_DATE)
+      ) AS workout_count,
+      (
+        SELECT COUNT(*)
+        FROM entries
+        WHERE meditation_done = TRUE AND user_id = u.id AND entry_date >= date_trunc('month', CURRENT_DATE)
+      ) AS meditation_count,
       (
         SELECT AVG(CASE WHEN t.completed THEN 1.0 ELSE 0.0 END)
         FROM entries e
@@ -137,10 +141,10 @@ async function getStatsByEmail(email) {
           AND e.entry_date >= date_trunc('month', CURRENT_DATE)
       ) AS month_tasks_completion,
       (
-        SELECT AVG(e.mood::numeric)
+        SELECT AVG(e.sleep_hours)
         FROM entries e
         WHERE e.user_id = u.id
-      ) AS overall_mood_avg,
+      ) AS average_sleep_duration,
       (
         SELECT AVG(e.mood::numeric)
         FROM entries e

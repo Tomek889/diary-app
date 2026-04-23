@@ -110,17 +110,19 @@ app.get("/api/stats", async (req, res) => {
 
     if (!stats) {
       return res.json({
-        overallTasksCompletion: null,
+        workoutCount: null,
+        meditationCount: null,
         monthTasksCompletion: null,
-        overallMoodAvg: null,
+        averageSleepDuration: null,
         monthMoodAvg: null,
       });
     }
 
     return res.json({
-      overallTasksCompletion: stats.overall_tasks_completion,
+      workoutCount: stats.workout_count,
+      meditationCount: stats.meditation_count,
       monthTasksCompletion: stats.month_tasks_completion,
-      overallMoodAvg: stats.overall_mood_avg,
+      averageSleepDuration: stats.average_sleep_duration,
       monthMoodAvg: stats.month_mood_avg,
     });
   } catch (err) {
