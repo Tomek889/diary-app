@@ -23,6 +23,7 @@
 body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  font-family: "Inter", "Roboto", sans-serif;
 }
 
 img,
@@ -92,5 +93,5 @@ nav {
 }
 
 .entered-day {
-    background-color: red;
+  background-color: red;
 }
