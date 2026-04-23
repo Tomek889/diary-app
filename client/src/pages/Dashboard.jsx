@@ -60,7 +60,7 @@ export default function Dashboard() {
 
   const today = new Date();
   const todayDate = `${today.getFullYear()}-${String(
-    today.getMonth() + 1
+    today.getMonth() + 1,
   ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
   if (!email) {
@@ -101,9 +101,9 @@ export default function Dashboard() {
       <div className="dashboard-right">
         <h2>Your Journal</h2>
         <Calendar />
-        <button>
-          <Link to={`/journal/${todayDate}`}>Go to today's entry</Link>
-        </button>
+        <Link className="today-entry-btn" to={`/journal/${todayDate}`}>
+          Go to today's entry
+        </Link>
       </div>
     </div>
   );

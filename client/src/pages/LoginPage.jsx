@@ -1,5 +1,5 @@
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -34,21 +34,36 @@ export default function LoginPage() {
   };
 
   return (
-    <div>
-      <h1>Login</h1>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="login-email">Email</label>
-        <input
-          type="email"
-          id="login-email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
-          required
-        />
-        <button type="submit">Log In</button>
-      </form>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-    </div>
+    <section className="auth-page">
+      <div className="auth-card">
+        <h1 className="auth-title">Welcome back</h1>
+        <p className="auth-subtitle">Log in to continue</p>
+
+        <form onSubmit={handleSubmit} className="auth-form">
+          <label htmlFor="login-email" className="form-label">
+            Email
+          </label>
+          <input
+            id="login-email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="form-input"
+            required
+          />
+
+          {error && <p className="auth-error">{error}</p>}
+
+          <button type="submit" className="btn-primary auth-submit">
+            Log In
+          </button>
+        </form>
+
+        <p className="auth-switch">
+          Don&apos;t have an account? <Link to="/signup">Sign up</Link>
+        </p>
+      </div>
+    </section>
   );
 }

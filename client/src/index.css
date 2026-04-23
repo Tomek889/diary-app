@@ -102,19 +102,24 @@ nav {
 }
 
 .pagesNav {
-    display: flex;
-    gap: 30px;
+  display: flex;
+  gap: 30px;
+}
+
+.auth-links {
+  display: flex;
+  gap: 20px;
 }
 
 nav a,
 nav button {
-  text-decoration: none;
-  color: #111827;
+  color: inherit;
   background: transparent;
   border: none;
+  padding: 8px;
   cursor: pointer;
-  padding: 8px 10px;
   border-radius: 8px;
+  text-decoration: none;
 }
 
 nav a:hover,
@@ -128,13 +133,19 @@ main {
 
 .home {
   min-height: calc(100vh - 200px);
-  display: grid;
-  place-items: center;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .home-content {
   max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-top: -30px;
 }
 
 .home h1 {
@@ -150,4 +161,173 @@ main {
 .logo {
   font-size: 1.6rem;
   font-weight: 700;
+}
+
+.login-buttons a:first-child {
+  color: #374151;
+  background: #ffffff;
+  border-color: #d1d5db;
+}
+
+.login-buttons a:first-child:hover {
+  background: #f9fafb;
+}
+
+.login-buttons a:last-child {
+  color: #ffffff;
+  background: #4f46e5;
+  border-color: #4f46e5;
+}
+
+.login-buttons a:last-child:hover {
+  background: #4338ca;
+}
+
+.auth-links a:focus-visible,
+.auth-links button:focus-visible,
+.login-buttons a:focus-visible {
+  outline: 2px solid #a5b4fc;
+  outline-offset: 2px;
+}
+
+.auth-links a,
+.auth-links button,
+.login-buttons a,
+.login-buttons button,
+.today-entry-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: all 160ms ease;
+  cursor: pointer;
+}
+
+.btn-ghost {
+  color: #374151;
+  background: #ffffff;
+  border-color: #d1d5db;
+}
+
+.btn-ghost:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.btn-primary {
+  color: #ffffff;
+  background: #4f46e5;
+  border-color: #4f46e5;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.btn-primary:hover {
+  background: #4338ca;
+  border-color: #4338ca;
+}
+
+.login-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.today-entry-btn {
+  margin-top: 12px;
+  background: #eef2ff;
+  color: #4338ca;
+  border-color: #c7d2fe;
+}
+
+.today-entry-btn:hover {
+  background: #e0e7ff;
+}
+
+.auth-page {
+  min-height: calc(100vh - 200px);
+  display: grid;
+  place-items: center;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.auth-title {
+  font-size: 1.6rem;
+  margin-bottom: 4px;
+}
+
+.auth-subtitle {
+  color: #6b7280;
+  margin-bottom: 20px;
+}
+
+.auth-form {
+  display: grid;
+  gap: 10px;
+}
+
+.form-label {
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.form-input {
+  height: 42px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 0 12px;
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
+}
+
+.auth-submit {
+  width: 100%;
+  margin-top: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.auth-error {
+  color: #dc2626;
+  font-size: 0.9rem;
+}
+
+.auth-switch {
+  margin-top: 14px;
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+.auth-switch a {
+  color: #4f46e5;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-submit,
+.btn-primary,
+.btn-ghost {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  outline: none;
 }

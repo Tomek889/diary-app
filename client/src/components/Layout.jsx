@@ -24,13 +24,25 @@ export default function Layout() {
           <Link to="/">Home</Link>
           {email && <Link to="/dashboard">Dashboard</Link>}
         </div>
+
         {!email && (
           <div className="auth-links">
-            <Link to="/signup">Sign Up</Link>
-            <Link to="/login">Log In</Link>
+            <Link to="/signup" className="btn-ghost">
+              Sign Up
+            </Link>
+            <Link to="/login" className="btn-primary">
+              Log In
+            </Link>
           </div>
         )}
-        <div>{email && <button onClick={handleLogout}>Log Out</button>}</div>
+
+        {email && (
+          <div className="auth-links">
+            <button onClick={handleLogout} className="btn-ghost">
+              Log Out
+            </button>
+          </div>
+        )}
       </nav>
 
       <main>
