@@ -1,17 +1,15 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import { useState } from "react";
 
 export default function Layout() {
-  const [email, setEmail] = useState(() => {
-    if (typeof window === "undefined") return "";
-    return window.localStorage.getItem("userEmail") || "";
-  });
+  const email =
+    typeof window === "undefined"
+      ? ""
+      : window.localStorage.getItem("userEmail") || "";
 
   const navigate = useNavigate();
 
   const handleLogout = () => {
     window.localStorage.removeItem("userEmail");
-    setEmail("");
     navigate("/");
   };
 
