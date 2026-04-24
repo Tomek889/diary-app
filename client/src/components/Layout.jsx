@@ -13,7 +13,6 @@ export default function Layout() {
     window.localStorage.removeItem("userEmail");
     setEmail("");
     navigate("/");
-    window.location.reload();
   };
 
   return (

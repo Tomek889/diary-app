@@ -28,7 +28,6 @@ export default function SignupPage() {
 
       localStorage.setItem("userEmail", cleanEmail);
       navigate("/dashboard");
-      window.location.reload();
     } catch (err) {
       setError(err.message);
     }
