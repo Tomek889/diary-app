@@ -1,16 +1,39 @@
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export default function Layout() {
-  const email =
-    typeof window === "undefined"
-      ? ""
-      : window.localStorage.getItem("userEmail") || "";
-
   const navigate = useNavigate();
+  const location = useLocation();
+  const [user, setUser] = useState(null);
 
-  const handleLogout = () => {
-    window.localStorage.removeItem("userEmail");
-    navigate("/");
+  useEffect(() => {
+    fetch(`${API_URL}/api/whoami`, {
+      credentials: "include",
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => setUser(data?.user ?? null))
+      .catch(() => setUser(null));
+  }, [location.pathname]);
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        console.error("Logout failed");
+        return;
+      }
+
+      setUser(null);
+      navigate("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   return (
@@ -19,10 +42,10 @@ export default function Layout() {
         <p className="logo">Diary App</p>
         <div className="pagesNav">
           <Link to="/">Home</Link>
-          {email && <Link to="/dashboard">Dashboard</Link>}
+          {user && <Link to="/dashboard">Dashboard</Link>}
         </div>
 
-        {!email && (
+        {!user && (
           <div className="auth-links">
             <Link to="/signup" className="btn-ghost">
               Sign Up
@@ -33,7 +56,7 @@ export default function Layout() {
           </div>
         )}
 
-        {email && (
+        {user && (
           <div className="auth-links">
             <button onClick={handleLogout} className="btn-ghost">
               Log Out

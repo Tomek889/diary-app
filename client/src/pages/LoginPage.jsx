@@ -34,7 +34,6 @@ export default function LoginPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Login failed");
 
-      localStorage.setItem("userEmail", cleanEmail);
       navigate("/dashboard");
     } catch (err) {
       setError(err.message);
