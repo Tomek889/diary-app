@@ -1,5 +1,7 @@
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 const {
   getStatsByEmail,
   insertUser,
@@ -18,10 +20,14 @@ const bcrypt = require("bcrypt");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const JWT_SECRET = process.env.JWT_SECRET;
+
 const allowedOrigins = [
   "http://localhost:5173",
   "https://diary-app-jet.vercel.app",
 ];
+
+app.set("trust proxy", 1);
 
 app.use(
   cors({
@@ -32,12 +38,40 @@ app.use(
         callback(new Error("Not allowed by CORS"));
       }
     },
+    credentials: true,
   }),
 );
 app.use(express.json());
+app.use(cookieParser());
 
-app.get("/api/dates", async (req, res) => {
-  const email = req.get("X-User-Email") || "";
+function getCookieOptions() {
+  const isProduction = process.env.NODE_ENV === "production";
+  return {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+    path: "/",
+  };
+}
+
+function authRequired(req, res, next) {
+  const token = req.cookies?.token;
+  if (!token) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  try {
+    const payload = jwt.verify(token, JWT_SECRET);
+    req.user = payload;
+    return next();
+  } catch (err) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+}
+
+app.get("/api/dates", authRequired, async (req, res) => {
+  const email = req.user.email;
 
   try {
     if (!email || !email.trim()) {
@@ -52,8 +86,8 @@ app.get("/api/dates", async (req, res) => {
   }
 });
 
-app.get("/api/entry", async (req, res) => {
-  const email = req.get("X-User-Email") || "";
+app.get("/api/entry", authRequired,async (req, res) => {
+  const email = req.user.email;
   const date = req.query.date;
 
   try {
@@ -95,7 +129,12 @@ app.post("/api/signup", async (req, res) => {
     const passwordHash = await bcrypt.hash(password, 10);
     const user = await insertUser(email.trim().toLowerCase(), passwordHash);
 
-    return res.status(201).json({ user });
+    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res.cookie("token", token, getCookieOptions());
+    return res.status(201).json({ user: { id: user.id, email: user.email } });
   } catch (err) {
     if (err.code === "23505") {
       return res.status(400).json({ error: "Email already exists" });
@@ -127,6 +166,11 @@ app.post("/api/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
+    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res.cookie("token", token, getCookieOptions());
     return res.json({ user: { id: user.id, email: user.email } });
   } catch (err) {
     console.error(err);
@@ -134,12 +178,9 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-app.get("/api/stats", async (req, res) => {
+app.get("/api/stats", authRequired, async (req, res) => {
   try {
-    const email = req.get("X-User-Email") || "";
-    if (!email) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+    const email = req.user.email;
 
     const stats = await getStatsByEmail(email);
 
@@ -166,8 +207,8 @@ app.get("/api/stats", async (req, res) => {
   }
 });
 
-app.post("/api/entry", async (req, res) => {
-  const email = req.get("X-User-Email") || "";
+app.post("/api/entry", authRequired, async (req, res) => {
+  const email = req.user.email;
   const {
     entry_date,
     mood,
@@ -218,8 +259,8 @@ app.post("/api/entry", async (req, res) => {
   }
 });
 
-app.post("/api/update", async (req, res) => {
-  const email = req.get("X-User-Email") || "";
+app.post("/api/update", authRequired, async (req, res) => {
+  const email = req.user.email;
   const {
     entry_date,
     mood,
@@ -274,9 +315,9 @@ app.post("/api/update", async (req, res) => {
   }
 });
 
-app.get("/api/entry/:date/pdf", async (req, res) => {
+app.get("/api/entry/:date/pdf", authRequired, async (req, res) => {
   try {
-    const email = req.get("X-User-Email") || "";
+    const email = req.user.email;
     const date = req.params.date;
 
     if (!email) return res.status(401).json({ error: "Unauthorized" });
