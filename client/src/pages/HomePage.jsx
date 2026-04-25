@@ -1,13 +1,20 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export default function HomePage() {
-  const [email] = useState(() => {
-    if (typeof window === "undefined") return "";
-    return window.localStorage.getItem("userEmail") || "";
-  });
-
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/whoami`, {
+      credentials: "include",
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => setUser(data?.user ?? null))
+      .catch(() => setUser(null));
+  }, []);
 
   return (
     <section className="home">
@@ -20,7 +27,7 @@ export default function HomePage() {
           productivity!
         </p>
 
-        {email ? (
+        {user ? (
           <div className="login-buttons">
             <button
               className="btn-primary"

@@ -17,16 +17,17 @@ export default function Calendar() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const email = localStorage.getItem("userEmail");
-    if (!email) return;
-
     fetch(`${API_URL}/api/dates`, {
       headers: {
         "Content-Type": "application/json",
-        "X-User-Email": email,
       },
+      credentials: "include",
     })
       .then(async (res) => {
+        if (res.status === 401) {
+          navigate("/login", { replace: true });
+          return null;
+        }
         if (!res.ok) {
           throw new Error("Failed to load dates.");
         }
@@ -39,7 +40,7 @@ export default function Calendar() {
       .catch((err) => {
         console.error("Error loading dates:", err);
       });
-  }, []);
+  }, [navigate]);
 
   const handleSelect = (selectedDate) => {
     if (!selectedDate) return;

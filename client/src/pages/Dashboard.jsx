@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Calendar from "../components/Calendar";
 import CountUp from "../components/CountUp";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -14,21 +14,23 @@ function rateMood(avg) {
 }
 
 export default function Dashboard() {
-  const [email] = useState(() => localStorage.getItem("userEmail") || "");
+  const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!email) return;
-
     fetch(`${API_URL}/api/stats`, {
       headers: {
         "Content-Type": "application/json",
-        "X-User-Email": email,
       },
+      credentials: "include",
     })
       .then(async (res) => {
+        if (res.status === 401) {
+          navigate("/login", { replace: true });
+          return null;
+        }
         if (!res.ok) {
           throw new Error("Failed to load stats.");
         }
@@ -43,7 +45,7 @@ export default function Dashboard() {
       .finally(() => {
         setLoading(false);
       });
-  }, [email]);
+  }, [navigate]);
 
   const noData = useMemo(() => {
     if (!stats) return true;
@@ -60,10 +62,6 @@ export default function Dashboard() {
   const todayDate = `${today.getFullYear()}-${String(
     today.getMonth() + 1,
   ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-
-  if (!email) {
-    return <Navigate to="/login" replace />;
-  }
 
   return (
     <div className="dashboard">

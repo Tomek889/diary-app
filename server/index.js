@@ -90,7 +90,7 @@ app.get("/api/dates", authRequired, async (req, res) => {
   }
 });
 
-app.get("/api/entry", authRequired,async (req, res) => {
+app.get("/api/entry", authRequired, async (req, res) => {
   const email = req.user.email;
   const date = req.query.date;
 
@@ -180,6 +180,11 @@ app.post("/api/login", async (req, res) => {
     console.error(err);
     return res.status(500).json({ error: "Internal server error" });
   }
+});
+
+app.post("/api/logout", authRequired, (req, res) => {
+  res.clearCookie("token", { ...getCookieOptions(), maxAge: undefined });
+  return res.json({ ok: true });
 });
 
 app.get("/api/stats", authRequired, async (req, res) => {

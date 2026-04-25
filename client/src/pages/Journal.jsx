@@ -5,7 +5,6 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export default function Journal() {
   const navigate = useNavigate();
-  const [email] = useState(() => localStorage.getItem("userEmail") || "");
   const { date } = useParams();
   const [modal, setModal] = useState({
     isOpen: false,
@@ -35,16 +34,14 @@ export default function Journal() {
   const [entryExists, setEntryExists] = useState(false);
 
   useEffect(() => {
-    if (!email || !date) return;
-
     const loadEntry = async () => {
       setLoadingEntry(true);
       try {
         const res = await fetch(`${API_URL}/api/entry?date=${encodeURIComponent(date)}`, {
           headers: {
             "Content-Type": "application/json",
-            "X-User-Email": email,
           },
+          credentials: "include",
         });
 
         if (res.status === 404) {
@@ -98,7 +95,7 @@ export default function Journal() {
     };
 
     loadEntry();
-  }, [email, date, navigate]);
+  }, [date, navigate]);
 
   const moodOptions = [
     { value: 0, label: "Awful" },
@@ -153,8 +150,8 @@ export default function Journal() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-User-Email": email,
       },
+      credentials: "include",
       body: JSON.stringify(payload),
     });
 
@@ -205,8 +202,8 @@ export default function Journal() {
       const res = await fetch(`${API_URL}/api/entry/${encodeURIComponent(date)}/pdf`, {
         headers: {
           "Content-Type": "application/json",
-          "X-User-Email": email,
         },
+        credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to generate PDF");
 
@@ -226,10 +223,6 @@ export default function Journal() {
       });
     }
   };
-
-  if (!email) {
-    return <Navigate to="/login" replace />;
-  }
 
   if (loadingEntry) {
     return <p>Loading entry...</p>;
