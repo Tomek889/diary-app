@@ -14,6 +14,7 @@ const {
 } = require("./db/queries");
 const { generatePdf } = require("./pdf/journalPdf");
 require("dotenv").config();
+const bcrypt = require("bcrypt");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -79,12 +80,21 @@ app.get("/api/entry", async (req, res) => {
 
 app.post("/api/signup", async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, password } = req.body;
+
     if (!email || !email.trim()) {
       return res.status(400).json({ error: "Email is required" });
     }
 
-    const user = await insertUser(email.trim().toLowerCase());
+    if (!password || password.length < 6) {
+      return res
+        .status(400)
+        .json({ error: "Password must be at least 6 characters" });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+    const user = await insertUser(email.trim().toLowerCase(), passwordHash);
+
     return res.status(201).json({ user });
   } catch (err) {
     if (err.code === "23505") {
@@ -97,9 +107,14 @@ app.post("/api/signup", async (req, res) => {
 
 app.post("/api/login", async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, password } = req.body;
+
     if (!email || !email.trim()) {
       return res.status(400).json({ error: "Email is required" });
+    }
+
+    if (!password) {
+      return res.status(400).json({ error: "Password is required" });
     }
 
     const user = await validateUser(email.trim().toLowerCase());
@@ -107,7 +122,12 @@ app.post("/api/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    return res.json({ user });
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    return res.json({ user: { id: user.id, email: user.email } });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Internal server error" });

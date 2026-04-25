@@ -103,7 +103,7 @@ async function getTasks(entry_id) {
   return rows;
 }
 
-async function insertUser(email, passwordHash = "zaq1") {
+async function insertUser(email, passwordHash) {
   const { rows } = await pool.query(
     "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING *",
     [email, passwordHash],
@@ -111,10 +111,10 @@ async function insertUser(email, passwordHash = "zaq1") {
   return rows[0];
 }
 
-async function validateUser(email, passwordHash = "zaq1") {
+async function validateUser(email) {
   const { rows } = await pool.query(
-    "SELECT * FROM users WHERE email = $1 AND password = $2",
-    [email, passwordHash],
+    "SELECT * FROM users WHERE email = $1",
+    [email],
   );
   return rows[0];
 }
