@@ -70,6 +70,10 @@ function authRequired(req, res, next) {
   }
 }
 
+app.get("/api/whoami", authRequired, (req, res) => {
+  return res.json({ user: req.user });
+});
+
 app.get("/api/dates", authRequired, async (req, res) => {
   const email = req.user.email;
 
