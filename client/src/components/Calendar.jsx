@@ -49,12 +49,17 @@ export default function Calendar() {
   };
 
   return (
-    <DayPicker
-      mode="single"
-      selected={date}
-      onSelect={handleSelect}
-      modifiers={{ entered: enteredDates }}
-      modifiersClassNames={{ entered: "entered-day" }}
-    />
+    <div className="calendar">
+      <DayPicker
+        navLayout="around"
+        captionLayout="label"
+        fixedWeeks
+        mode="single"
+        selected={date}
+        onSelect={handleSelect}
+        modifiers={{ entered: enteredDates }}
+        modifiersClassNames={{ entered: "entered-day" }}
+      />
+    </div>
   );
 }

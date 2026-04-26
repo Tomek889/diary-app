@@ -75,7 +75,7 @@ export default function Dashboard() {
         {!loading && !error && (
           <div className="stats-grid">
             <div className="stat-card">
-              <h2>Tasks completed (this month)</h2>
+              <h2>Tasks completed this month</h2>
               <p>
                 {stats?.monthTasksCompletion != null ? (
                   <>
