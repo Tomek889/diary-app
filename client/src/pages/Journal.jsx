@@ -44,6 +44,12 @@ export default function Journal() {
           credentials: "include",
         });
 
+        if (res.status === 401) {
+          setLoadingEntry(false);
+          navigate("/login");
+          return;
+        }
+
         if (res.status === 404) {
           setLoadingEntry(false);
           setEntryExists(false);
