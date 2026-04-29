@@ -1,8 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "../context/useAuth";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export default function LoginPage() {
+  const { refreshUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -34,6 +36,7 @@ export default function LoginPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Login failed");
 
+      await refreshUser();
       navigate("/dashboard");
     } catch (err) {
       setError(err.message);

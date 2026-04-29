@@ -1,20 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useAuth } from "../context/useAuth";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export default function HomePage() {
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    fetch(`${API_URL}/api/whoami`, {
-      credentials: "include",
-    })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => setUser(data?.user ?? null))
-      .catch(() => setUser(null));
-  }, []);
 
   return (
     <section className="home">
@@ -27,7 +18,7 @@ export default function HomePage() {
           productivity!
         </p>
 
-        {user ? (
+        {isAuthenticated ? (
           <div className="login-buttons">
             <button
               className="btn-primary"

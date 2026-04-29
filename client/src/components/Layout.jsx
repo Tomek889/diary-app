@@ -1,21 +1,11 @@
-import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/useAuth";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export default function Layout() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    fetch(`${API_URL}/api/whoami`, {
-      credentials: "include",
-    })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => setUser(data?.user ?? null))
-      .catch(() => setUser(null));
-  }, [location.pathname]);
+  const { setUser, isAuthenticated } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -42,10 +32,10 @@ export default function Layout() {
         <p className="logo">Diary App</p>
         <div className="pagesNav">
           <Link to="/">Home</Link>
-          {user && <Link to="/dashboard">Dashboard</Link>}
+          {isAuthenticated && <Link to="/dashboard">Dashboard</Link>}
         </div>
 
-        {!user && (
+        {!isAuthenticated && (
           <div className="auth-links">
             <Link to="/signup" className="btn-ghost">
               Sign Up
@@ -56,7 +46,7 @@ export default function Layout() {
           </div>
         )}
 
-        {user && (
+        {isAuthenticated && (
           <div className="auth-links">
             <button onClick={handleLogout} className="btn-ghost">
               Log Out
